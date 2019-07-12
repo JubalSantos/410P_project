@@ -1,0 +1,7 @@
+[package]
+name = "Project"
+version = "0.1.0"
+authors = ["rsanford", "jubalsantos"]
+edition = "2018"
+
+[dependencies]
