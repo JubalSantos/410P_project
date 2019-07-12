@@ -1,6 +1,6 @@
-# 410_Pproject
+# 410_Project
 
-Copyright (c) Jubal Gonzalez-Santos, Ryan stanford
+Copyright (c) Jubal Gonzalez-Santos, Ryan Sanford
 
 #name_of_project
 
