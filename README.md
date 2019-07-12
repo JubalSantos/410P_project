@@ -1,4 +1,4 @@
-# 410_Project
+# Project
 
 Copyright (c) Jubal Gonzalez-Santos, Ryan Sanford
 
