@@ -1,4 +1,4 @@
-# Project
+# Mazemania
 
 Copyright (c) Jubal Gonzalez-Santos, Ryan Sanford
 
