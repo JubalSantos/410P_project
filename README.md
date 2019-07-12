@@ -2,9 +2,9 @@
 
 Copyright (c) Jubal Gonzalez-Santos, Ryan Sanford
 
-#name_of_project
+The name of our project is mazemania
 
-#description of what it is, what it does, and how it works
+#descritpion
 
 #example of illustration the operation
 
