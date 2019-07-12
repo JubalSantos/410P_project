@@ -1,5 +1,5 @@
 [package]
-name = "Project"
+name = "Mazemania"
 version = "0.1.0"
 authors = ["rsanford", "jubalsantos"]
 edition = "2018"
