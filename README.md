@@ -10,16 +10,17 @@ stay alive since there will be enemies around that is going to try and kill the 
 
 
 The game would look somewhat like this
-|-------------------------------|
+
+| ----------------------------- |
 |  start  |                     |
 |   |     |    -----------|     |
 |   |        |    |             |
 |   ----------    |    |------- |   
 |         | enemy |        |end |
-|-----|  |------------|    |    |
+| ----|  |------------|    |    |
 |                     |    -    |
-|enemy  |---------    |         |
-|-------------------------------|
+| enemy  |---------   |         |
+| ----------------------------- |
 
 
 ## License 
