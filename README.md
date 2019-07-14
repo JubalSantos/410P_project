@@ -10,18 +10,18 @@ stay alive since there will be enemies around that is going to try and kill the 
 
 
 The game would look somewhat like this
-
-#| ----------------------------- |
-#|  start  |                     |
-#|   |     |    -----------|     |
-#|   |        |    |             |
-#|   ----------    |    |------- |   
-#|         | enemy |        |end |
-#| ----|  |------------|    |    |
-#|                     |    -    |
-#| enemy  |---------   |         |
-#| ----------------------------- |
-
+```
+| ----------------------------- |
+|  start  |                     |
+|   |     |    -----------|     |
+|   |        |    |             |
+|   ----------    |    |------- |   
+|         | enemy |        |end |
+| ----|  |------------|    |    |
+|                     |    -    |
+| enemy  |---------   |         |
+| ----------------------------- |
+```
 
 ## License 
 This program is licensed under the "MIT License". Please see the file LICENSE in the source distribution of this software for license terms.
