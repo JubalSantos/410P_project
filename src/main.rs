@@ -23,6 +23,7 @@ struct Game {
 }
 
 impl Game {
+    //generates a white gameboard
     fn render(&mut self, arg: &RenderArgs) {
         use graphics::*;
 
@@ -30,7 +31,7 @@ impl Game {
         self.gl.draw(arg.viewport(), |_c, gl| {
             clear(WHITE, gl);
         });
-
+	//generates the player and enemie in the game
         self.player.render(&mut self.gl, arg);
         self.enemie.render(&mut self.gl, arg);
     }
@@ -63,6 +64,7 @@ struct Player {
     y: u32,
     dir: Direction,
 }
+
 impl Player {
     fn render(&self, gl: &mut GlGraphics, args: &RenderArgs) {
         const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
@@ -73,7 +75,9 @@ impl Player {
             let trans = c.transform;
             graphics::rectangle(BLACK, sq, trans, gl);
         });
+
     }
+
     fn update(&mut self) {
         match self.dir {
             Direction::RIGHT => self.x += 1,
@@ -88,18 +92,21 @@ struct Enemie {
     x: u32,
     y: u32,
 }
+
 impl Enemie {
     fn render(&self, gl: &mut GlGraphics, args: &RenderArgs) {
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
         //makes a square to be drawn
         let square =
             graphics::rectangle::square(f64::from(self.x * 20), f64::from(self.y * 20), 20_f64);
-        //draws the enemie on the window
+        
+	//draws the enemie on the window
         gl.draw(args.viewport(), |c, gl| {
             let trans = c.transform;
             graphics::rectangle(RED, square, trans, gl);
         });
     }
+
     fn update(&mut self, p: &Player) -> bool {
         if p.x == self.x && p.y == self.y {
             true
@@ -108,8 +115,10 @@ impl Enemie {
         }
     }
 }
+
 fn main() {
     let opengl = OpenGL::V3_2;
+
     //this is the setup of the window size and title
     let mut window: Window = WindowSettings::new("Mazemenia", [500, 500])
         .graphics_api(opengl)
