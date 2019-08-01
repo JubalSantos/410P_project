@@ -1,9 +1,7 @@
-extern crate piston;
-extern crate opengl_graphics;
-
 use piston::input::*;
 use opengl_graphics::GlGraphics;
 
+#[derive(Clone, Copy, PartialEq)]
 pub enum Direction {
     RIGHT,
     LEFT,
