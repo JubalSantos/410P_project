@@ -12,6 +12,7 @@ use piston::window::WindowSettings;
 
 mod game;
 mod player;
+mod maze;
 
 use crate::game::Game;
 use crate::player::Enemie;
