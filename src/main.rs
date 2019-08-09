@@ -15,19 +15,23 @@ mod player;
 mod maze;
 
 use crate::game::Game;
-use crate::player::Enemie;
-use crate::player::{Player, Direction};
+use crate::maze::Maze;
+use crate::player::{Player, Direction, Enemie};
 
 fn main() {
-    let opengl = OpenGL::V3_2;
+   // let opengl = OpenGL::V3_2;
+    let width = 41;
+    let height = 41;
+    let maze = Maze::gen(width, height);
+    maze.print();
 
+/*
     //this is the setup of the window size and title
     let mut window: Window = WindowSettings::new("Mazemenia", [500, 500])
         .graphics_api(opengl)
         .exit_on_esc(true)
         .build()
         .unwrap();
-
     let mut game = Game {
         gl: GlGraphics::new(opengl),
         player: Player {
@@ -42,6 +46,11 @@ fn main() {
             x: 10,
             y: 10,
         },
+        maze: Maze {
+            width: 21,
+            height: 21,
+            data: Vec::new(),
+        },
     };
 
     let mut events = Events::new(EventSettings::new().ups(4));
@@ -49,17 +58,19 @@ fn main() {
         if let Some(r) = e.render_args() {
             game.render(&r);
         }
+        
         if let Some(_u) = e.update_args() {
             if game.update() {
                 println!("Game Over");
-		println!("enemie found you");
+		        println!("enemie found you");
                 break;
             }
         }
+        
         if let Some(k) = e.button_args() {
             if k.state == ButtonState::Press {
                 game.input(&k.button);
             }
         }
-    }
+    }*/
 }
