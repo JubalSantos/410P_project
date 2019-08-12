@@ -270,7 +270,7 @@ impl Board {
 
         board
     }
-    
+
     fn with_trim_sides(&self) -> Self {
         self.with_trimmed_lines().transposed().with_trimmed_lines().transposed()
     }
@@ -386,7 +386,7 @@ impl Game {
                     *last_stage_switch = Instant::now();
                     return;
                 } else {
-                    Disposition::NewPiece(self.board.with_eliminate_lines(lines))
+                    Disposition::Mm
                 }
             }
             State::Moving(moving) => {
