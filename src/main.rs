@@ -217,28 +217,6 @@ impl Board {
         board
     }
 
-    fn prepend_empty_line(&self) -> Self {
-        let line : Vec<_> = (0..self.dim_x()).map(|_|None).collect();
-        let mut board = self.clone();
-
-        board.cells.insert(0, line);
-        board
-    }
-
-    fn with_eliminate_lines(&self, lines: &Vec<usize>) -> Self {
-        let mut board = self.clone();
-
-        for idx in lines {
-            board = board.without_line(*idx);
-        }
-
-        for _ in 0..lines.len() {
-            board = board.prepend_empty_line();
-        }
-
-        board
-    }
-
     fn with_trimmed_lines(&self) -> Self {
         let mut board = self.clone();
 
@@ -377,7 +355,7 @@ impl Game {
 
         let disp = match &mut self.state {
             State::GameOver => return,
-            State::Flashing(stage, last_stage_switch, lines) => {
+            State::Flashing(stage, last_stage_switch, _lines) => {
                 if last_stage_switch.elapsed() <= Duration::from_millis(50) {
                     return;
                 }
