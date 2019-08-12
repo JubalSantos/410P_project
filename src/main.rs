@@ -270,27 +270,7 @@ impl Board {
 
         board
     }
-    /*
-    fn with_mirrored_y(&self) -> Self {
-        let mut board = Self::empty(self.dim_x(), self.dim_y());
-
-        for x in 0..self.dim_x() {
-            for y in 0..self.dim_y() {
-                board.cells[y][x] = self.cells[y][self.dim_x() - x - 1];
-            }
-        }
-
-        board
-    }
-
-    fn with_rotated_counter(&self) -> Self {
-        self.transposed().with_mirrored_y()
-    }
-
-    fn with_rotated(&self) -> Self {
-        self.with_mirrored_y().transposed()
-    }*/
-
+    
     fn with_trim_sides(&self) -> Self {
         self.with_trimmed_lines().transposed().with_trimmed_lines().transposed()
     }
