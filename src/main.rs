@@ -1,89 +1,10 @@
-/*extern crate glutin_window;
-extern crate graphics;
 extern crate opengl_graphics;
-extern crate piston;
-
-use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{GlGraphics, OpenGL};
-use piston::event_loop::*;
-use piston::input::*;
-use piston::window::WindowSettings;
-
-mod game;
-mod maze;
-mod player;
-
-use crate::game::Game;
-use crate::maze::Maze;
-use crate::player::{Direction, Enemie, Player};
-
-fn main() {
-    let opengl = OpenGL::V3_2;
-    //the width and height need to be odd
-
-    /* let width = 21;
-    let height = 21;
-    let maze = Maze::gen(width, height);
-    maze.print();*/
-
-    //this is the setup of the window size and title
-    let mut window: Window = WindowSettings::new("Mazemenia", [500, 500])
-        .graphics_api(opengl)
-        .exit_on_esc(true)
-        .build()
-        .unwrap();
-
-    /*
-    let mut game = Game {
-        gl: GlGraphics::new(opengl),
-        player: Player {
-            //starting position of snake
-            x: 0,
-            y: 0,
-            //the direction that it starts moving
-            dir: Direction::RIGHT,
-        },
-        enemie: Enemie {
-            //starting postion of the enemie
-            x: 10,
-            y: 10,
-        },
-        maze: Maze {
-            width: 21,
-            height: 21,
-            data: Vec::new(),
-        },
-    };
-    */
-    let mut game = game::Game::new(GlGraphics::new(opengl));
-    let mut events = Events::new(EventSettings::new().ups(4));
-    while let Some(e) = events.next(&mut window) {
-        if let Some(r) = e.render_args() {
-            game.render(&r);
-        }
-
-        if let Some(_u) = e.update_args() {
-            if game.update() {
-                //println!("Game Over");
-                //println!("enemie found you");
-                break;
-            }
-        }
-
-        if let Some(k) = e.button_args() {
-            if k.state == ButtonState::Press {
-                game.input(&k.button);
-            }
-        }
-    }
-}*/
 extern crate piston_window;
-extern crate opengl_graphics;
 extern crate rand;
 
-use piston_window::*;
-use std::time::{Instant, Duration};
 use opengl_graphics::GlGraphics;
+use piston_window::*;
+use std::time::{Duration, Instant};
 
 #[derive(Copy, Clone)]
 enum Color {
@@ -98,8 +19,10 @@ struct Metrics {
 
 impl Metrics {
     fn resolution(&self) -> [u32; 2] {
-        [(self.board_x * self.block_pixels) as u32,
-         (self.board_y * self.block_pixels) as u32]
+        [
+            (self.board_x * self.block_pixels) as u32,
+            (self.board_y * self.block_pixels) as u32,
+        ]
     }
 }
 
@@ -120,19 +43,23 @@ enum DrawEffect<'a> {
 
 impl Board {
     fn empty(dim_x: usize, dim_y: usize) -> Self {
-        let line : Vec<_> = (0..dim_x).map(|_|None).collect();
-        let cells : Vec<_> = (0..dim_y).map(|_|line.clone()).collect();
+        let line: Vec<_> = (0..dim_x).map(|_| None).collect();
+        let cells: Vec<_> = (0..dim_y).map(|_| line.clone()).collect();
         Board { cells }
     }
 
-    fn dim_x(&self) -> usize { self.cells[0].len() }
-    fn dim_y(&self) -> usize { self.cells.len() }
+    fn dim_x(&self) -> usize {
+        self.cells[0].len()
+    }
+    fn dim_y(&self) -> usize {
+        self.cells.len()
+    }
 
     fn player(spec: &[[u8; 4]; 4], color: Color) -> Self {
         let mut board = Board::empty(spec[0].len(), spec.len());
 
-        for x in 0.. spec[0].len() {
-            for y in 0 .. spec.len() {
+        for x in 0..spec[0].len() {
+            for y in 0..spec.len() {
                 board.cells[y][x] = if spec[y][x] != 0 { Some(color) } else { None }
             }
         }
@@ -151,7 +78,8 @@ impl Board {
                     let y = y as isize + offset.1;
                     if self.cells[y as usize][x as usize].is_none() {
                         copy.cells[y as usize][x as usize] = cell.clone();
-                    } else { // Collision
+                    } else {
+                        // Collision
                         return None;
                     }
                 }
@@ -161,8 +89,13 @@ impl Board {
         Some(copy)
     }
 
-    fn draw<'a>(&self, c: &Context, gl: &mut GlGraphics, effect: DrawEffect<'a>,
-                metrics: &Metrics) {
+    fn draw<'a>(
+        &self,
+        c: &Context,
+        gl: &mut GlGraphics,
+        effect: DrawEffect<'a>,
+        metrics: &Metrics,
+    ) {
         let mut draw = |color, rect: [f64; 4]| {
             Rectangle::new(color).draw(rect, &DrawState::default(), c.transform, gl);
         };
@@ -171,32 +104,31 @@ impl Board {
             for y in 0..self.dim_y() {
                 let block_pixels = metrics.block_pixels as f64;
                 let border_size = block_pixels / 20.0;
-                let outer = [block_pixels * (x as f64), block_pixels * (y as f64), block_pixels, block_pixels];
-                let inner = [outer[0] + border_size, outer[1] + border_size,
-                       outer[2] - border_size * 2.0, outer[3] - border_size * 2.0];
+                let outer = [
+                    block_pixels * (x as f64),
+                    block_pixels * (y as f64),
+                    block_pixels,
+                    block_pixels,
+                ];
+                let inner = [
+                    outer[0] + border_size,
+                    outer[1] + border_size,
+                    outer[2] - border_size * 2.0,
+                    outer[3] - border_size * 2.0,
+                ];
 
                 draw([0.0, 0.0, 0.0, 1.0], outer);
                 draw([0.1, 0.2, 0.3, 1.0], inner);
 
-                self.cells[y][x].map(|color| {
+                if let Some(color) = self.cells[y][x] {
                     let code = match color {
-                        Color::Red     => [1.0, 0.0, 0.0, 1.0],
+                        Color::Red => [1.0, 0.0, 0.0, 1.0],
                     };
-
                     draw(code, outer);
-
-                    let code = [
-                        code[0]*0.8,
-                        code[1]*0.8,
-                        code[2]*0.8,
-                        code[3]
-                    ];
-
-                    draw(code, inner);
-                });
+                }
 
                 match effect {
-                    DrawEffect::None => {},
+                    DrawEffect::None => {}
                     DrawEffect::Flash(lines) => {
                         if lines.contains(&(y as usize)) {
                             draw([1.0, 1.0, 1.0, 0.5], outer);
@@ -232,9 +164,13 @@ impl Board {
     }
 
     fn get_full_lines_indicts(&self) -> Vec<usize> {
-        self.cells.iter().enumerate()
-            .rev().filter(|(_, line)| line.iter().all(|cell| !cell.is_none()))
-            .map(|(idx, _)| idx).collect()
+        self.cells
+            .iter()
+            .enumerate()
+            .rev()
+            .filter(|(_, line)| line.iter().all(|cell| !cell.is_none()))
+            .map(|(idx, _)| idx)
+            .collect()
     }
 
     fn transposed(&self) -> Self {
@@ -250,7 +186,10 @@ impl Board {
     }
 
     fn with_trim_sides(&self) -> Self {
-        self.with_trimmed_lines().transposed().with_trimmed_lines().transposed()
+        self.with_trimmed_lines()
+            .transposed()
+            .with_trimmed_lines()
+            .transposed()
     }
 }
 
@@ -269,7 +208,7 @@ enum State {
 struct Game {
     board: Board,
     metrics: Metrics,
-    possible_pieces: Vec<Board>,
+    piece: Vec<Board>,
     state: State,
 }
 
@@ -277,34 +216,40 @@ impl Game {
     fn new(metrics: Metrics) -> Self {
         let __ = 0;
         let xx = 01;
-        let possible_pieces = vec![
-            Board::player(&[[__, __, __, __],
-                           [__, __, __, __],
-                           [__, __, xx, __],
-                           [__, __, __, __]], Color::Red),
-        ].into_iter().map(|x| x.with_trim_sides()).collect();
+        let piece = vec![Board::player(
+            &[
+                [__, __, __, __],
+                [__, __, __, __],
+                [__, __, xx, __],
+                [__, __, __, __],
+            ],
+            Color::Red,
+        )]
+        .into_iter()
+        .map(|x| x.with_trim_sides())
+        .collect();
 
         Game {
             board: Board::empty(metrics.board_x, metrics.board_y),
-            state: State::Moving(Self::new_move(&possible_pieces)),
-            possible_pieces,
+            state: State::Moving(Self::new_move(&piece)),
+            piece,
             metrics,
         }
     }
 
-    fn new_move(possible_pieces: &Vec<Board>) -> Moving {
-        let idx = rand::random::<usize>() % possible_pieces.len();
+    fn new_move(piece: &Vec<Board>) -> Moving {
+        let idx = rand::random::<usize>() % piece.len();
 
         Moving {
             offset: (0, 0),
-            player: possible_pieces[idx].clone(),
+            player: piece[idx].clone(),
             time_since_move: Instant::now(),
         }
     }
 
     fn move_piece(&mut self, change: (isize, isize)) {
         let opt_new_state = match &mut self.state {
-            State::GameOver | State::Flashing (_, _, _) => None,
+            State::GameOver | State::Flashing(_, _, _) => None,
             State::Moving(moving) => {
                 let new_offset = {
                     let (x, y) = moving.offset;
@@ -314,7 +259,7 @@ impl Game {
                 let is_down = change == (0, 1);
 
                 if self.board.as_merged(new_offset, &moving.player).is_none() {
-                     // There were collisions
+                    // There were collisions
                     if is_down {
                         match self.board.as_merged(moving.offset, &moving.player) {
                             None => Some(State::GameOver),
@@ -322,8 +267,8 @@ impl Game {
                                 let completed = merged_board.get_full_lines_indicts();
                                 self.board = merged_board;
 
-                                *moving = Self::new_move(&self.possible_pieces);
-                                if completed.len() > 0 {
+                                *moving = Self::new_move(&self.piece);
+                                if !completed.is_empty() {
                                     Some(State::Flashing(0, Instant::now(), completed))
                                 } else {
                                     None
@@ -333,10 +278,9 @@ impl Game {
                     } else {
                         None
                     }
-                } 
-                else {
+                } else {
                     moving.offset = new_offset;
-                        moving.time_since_move = Instant::now();
+                    moving.time_since_move = Instant::now();
                     None
                 }
             }
@@ -350,7 +294,6 @@ impl Game {
     fn progress(&mut self) {
         enum Disposition {
             Mm,
-            NewPiece(Board),
         }
 
         let disp = match &mut self.state {
@@ -377,45 +320,38 @@ impl Game {
 
         match disp {
             Disposition::Mm => self.move_piece((0, 0)),
-            Disposition::NewPiece(new_board) => {
-                self.board = new_board;
-                self.state = State::Moving(Self::new_move(&self.possible_pieces));
-            }
         }
     }
 
     fn render(&self, gl: &mut GlGraphics, args: &RenderArgs) {
         let res = self.metrics.resolution();
-        let c = &Context::new_abs(res[0] as f64, res[1] as f64);
+        let c = &Context::new_abs(f64::from(res[0]), f64::from(res[1]));
 
-        gl.draw(args.viewport(), |_, gl| {
-            match &self.state {
-                State::Flashing(stage, _, lines) => {
-                    let effect = {
-                        if *stage % 2 == 0 {
-                            DrawEffect::None
-                        } else {
-                            DrawEffect::Flash(&lines)
-                        }
-                    };
-                    self.board.draw(c, gl, effect, &self.metrics);
-                }
-                State::Moving(moving) => {
-                    if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
-                        merged.draw(c, gl, DrawEffect::None, &self.metrics);
+        gl.draw(args.viewport(), |_, gl| match &self.state {
+            State::Flashing(stage, _, lines) => {
+                let effect = {
+                    if *stage % 2 == 0 {
+                        DrawEffect::None
+                    } else {
+                        DrawEffect::Flash(&lines)
                     }
+                };
+                self.board.draw(c, gl, effect, &self.metrics);
+            }
+            State::Moving(moving) => {
+                if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
+                    merged.draw(c, gl, DrawEffect::None, &self.metrics);
                 }
-                State::GameOver => {
-                    self.board.draw(c, gl, DrawEffect::Darker, &self.metrics);
-                }
+            }
+            State::GameOver => {
+                self.board.draw(c, gl, DrawEffect::Darker, &self.metrics);
             }
         });
     }
 
     fn on_press(&mut self, args: &Button) {
-        match args {
-            Button::Keyboard(key) => { self.on_key(*key); }
-            _ => {},
+        if let Button::Keyboard(key) = args {
+            self.on_key(*key);
         }
     }
 
@@ -442,10 +378,10 @@ fn main() {
         board_y: 30,
     };
 
-    let mut window: PistonWindow
-        = WindowSettings::new("Mazemania", metrics.resolution()).exit_on_esc(true).build().unwrap_or_else(
-            |e| { panic!("Failed: {}", e) }
-        );
+    let mut window: PistonWindow = WindowSettings::new("Mazemania", metrics.resolution())
+        .exit_on_esc(true)
+        .build()
+        .unwrap_or_else(|e| panic!("Failed: {}", e));
 
     let mut gl = GlGraphics::new(OpenGL::V3_2);
     let mut game = Game::new(metrics);
@@ -462,4 +398,3 @@ fn main() {
         }
     }
 }
-
