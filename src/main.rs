@@ -49,7 +49,7 @@ impl Board {
         self.cells.len()
     }
 
-    fn player(spec: &[[u8; 4]; 4], color: Color) -> Self {
+    fn player(spec: &[[u8; 1]; 1], color: Color) -> Self {
         let mut board = Board::empty(spec[0].len(), spec.len());
 
         for x in 0..spec[0].len() {
@@ -83,7 +83,7 @@ impl Board {
         Some(copy)
     }
 
-    fn draw<>(&self, c: &Context, gl: &mut GlGraphics, metrics: &Metrics) {
+    fn draw(&self, c: &Context, gl: &mut GlGraphics, metrics: &Metrics) {
         let mut draw = |color, rect: [f64; 4]| {
             Rectangle::new(color).draw(rect, &DrawState::default(), c.transform, gl);
         };
@@ -179,18 +179,10 @@ struct Game {
 
 impl Game {
     fn new(metrics: Metrics) -> Self {
-        let piece = vec![Board::player(
-            &[
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [0, 0, 1, 0],
-                [0, 0, 0, 0],
-            ],
-            Color::Red,
-        )]
-        .into_iter()
-        .map(|x| x.with_trim_sides())
-        .collect();
+        let piece = vec![Board::player(&[[1]], Color::Red)]
+            .into_iter()
+            .map(|x| x.with_trim_sides())
+            .collect();
 
         Game {
             board: Board::empty(metrics.board_x, metrics.board_y),
@@ -215,10 +207,10 @@ impl Game {
                     let (x, y) = moving.offset;
                     ((x as isize + change.0), (y as isize + change.1))
                 };
-                
-                    moving.offset = new_offset;
-                    moving.time_since_move = Instant::now();
-                    None
+
+                moving.offset = new_offset;
+                moving.time_since_move = Instant::now();
+                None
             }
         };
 
@@ -256,8 +248,7 @@ impl Game {
                 if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
                     merged.draw(c, gl, &self.metrics);
                 }
-            }
-            //State::GameOver
+            } //State::GameOver
         });
     }
 
