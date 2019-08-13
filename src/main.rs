@@ -35,10 +35,9 @@ struct Board {
 
 type Player = Board;
 
-enum DrawEffect<'a> {
+enum DrawEffect<> {
     None,
-    Flash(&'a Vec<usize>),
-    Darker,
+    //Flash(&'a Vec<usize>),
 }
 
 impl Board {
@@ -93,7 +92,7 @@ impl Board {
         &self,
         c: &Context,
         gl: &mut GlGraphics,
-        effect: DrawEffect<'a>,
+        effect: DrawEffect<>,
         metrics: &Metrics,
     ) {
         let mut draw = |color, rect: [f64; 4]| {
@@ -129,14 +128,6 @@ impl Board {
 
                 match effect {
                     DrawEffect::None => {}
-                    DrawEffect::Flash(lines) => {
-                        if lines.contains(&(y as usize)) {
-                            draw([1.0, 1.0, 1.0, 0.5], outer);
-                        }
-                    }
-                    DrawEffect::Darker => {
-                        draw([0.0, 0.0, 0.0, 0.9], outer);
-                    }
                 }
             }
         }
@@ -161,16 +152,6 @@ impl Board {
         }
 
         board
-    }
-
-    fn get_full_lines_indicts(&self) -> Vec<usize> {
-        self.cells
-            .iter()
-            .enumerate()
-            .rev()
-            .filter(|(_, line)| line.iter().all(|cell| !cell.is_none()))
-            .map(|(idx, _)| idx)
-            .collect()
     }
 
     fn transposed(&self) -> Self {
@@ -201,7 +182,6 @@ struct Moving {
 
 enum State {
     Moving(Moving),
-    Flashing(isize, Instant, Vec<usize>),
     GameOver,
 }
 
@@ -217,7 +197,7 @@ impl Game {
         let __ = 0;
         let xx = 01;
         let piece = vec![Board::player(
-            &[
+         &[
                 [__, __, __, __],
                 [__, __, __, __],
                 [__, __, xx, __],
@@ -238,7 +218,7 @@ impl Game {
     }
 
     fn new_move(piece: &Vec<Board>) -> Moving {
-        let idx = rand::random::<usize>() % piece.len();
+        let idx = 20 % piece.len();
 
         Moving {
             offset: (0, 0),
@@ -249,7 +229,7 @@ impl Game {
 
     fn move_piece(&mut self, change: (isize, isize)) {
         let opt_new_state = match &mut self.state {
-            State::GameOver | State::Flashing(_, _, _) => None,
+            State::GameOver => None,
             State::Moving(moving) => {
                 let new_offset = {
                     let (x, y) = moving.offset;
@@ -264,15 +244,9 @@ impl Game {
                         match self.board.as_merged(moving.offset, &moving.player) {
                             None => Some(State::GameOver),
                             Some(merged_board) => {
-                                let completed = merged_board.get_full_lines_indicts();
                                 self.board = merged_board;
-
                                 *moving = Self::new_move(&self.piece);
-                                if !completed.is_empty() {
-                                    Some(State::Flashing(0, Instant::now(), completed))
-                                } else {
-                                    None
-                                }
+                                None
                             }
                         }
                     } else {
@@ -298,18 +272,6 @@ impl Game {
 
         let disp = match &mut self.state {
             State::GameOver => return,
-            State::Flashing(stage, last_stage_switch, _lines) => {
-                if last_stage_switch.elapsed() <= Duration::from_millis(50) {
-                    return;
-                }
-                if *stage < 18 {
-                    *stage += 1;
-                    *last_stage_switch = Instant::now();
-                    return;
-                } else {
-                    Disposition::Mm
-                }
-            }
             State::Moving(moving) => {
                 if moving.time_since_move.elapsed() <= Duration::from_millis(700) {
                     return;
@@ -328,23 +290,13 @@ impl Game {
         let c = &Context::new_abs(f64::from(res[0]), f64::from(res[1]));
 
         gl.draw(args.viewport(), |_, gl| match &self.state {
-            State::Flashing(stage, _, lines) => {
-                let effect = {
-                    if *stage % 2 == 0 {
-                        DrawEffect::None
-                    } else {
-                        DrawEffect::Flash(&lines)
-                    }
-                };
-                self.board.draw(c, gl, effect, &self.metrics);
-            }
             State::Moving(moving) => {
                 if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
                     merged.draw(c, gl, DrawEffect::None, &self.metrics);
                 }
             }
             State::GameOver => {
-                self.board.draw(c, gl, DrawEffect::Darker, &self.metrics);
+                self.board.draw(c, gl, DrawEffect::None, &self.metrics);
             }
         });
     }
@@ -373,9 +325,9 @@ impl Game {
 
 fn main() {
     let metrics = Metrics {
-        block_pixels: 20,
-        board_x: 30,
-        board_y: 30,
+        block_pixels: 30,
+        board_x: 21,
+        board_y: 21,
     };
 
     let mut window: PistonWindow = WindowSettings::new("Mazemania", metrics.resolution())
