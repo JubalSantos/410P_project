@@ -35,11 +35,6 @@ struct Board {
 
 type Player = Board;
 
-enum DrawEffect<> {
-    None,
-    //Flash(&'a Vec<usize>),
-}
-
 impl Board {
     fn empty(dim_x: usize, dim_y: usize) -> Self {
         let line: Vec<_> = (0..dim_x).map(|_| None).collect();
@@ -88,13 +83,7 @@ impl Board {
         Some(copy)
     }
 
-    fn draw<'a>(
-        &self,
-        c: &Context,
-        gl: &mut GlGraphics,
-        effect: DrawEffect<>,
-        metrics: &Metrics,
-    ) {
+    fn draw<>(&self, c: &Context, gl: &mut GlGraphics, metrics: &Metrics) {
         let mut draw = |color, rect: [f64; 4]| {
             Rectangle::new(color).draw(rect, &DrawState::default(), c.transform, gl);
         };
@@ -124,10 +113,6 @@ impl Board {
                         Color::Red => [1.0, 0.0, 0.0, 1.0],
                     };
                     draw(code, outer);
-                }
-
-                match effect {
-                    DrawEffect::None => {}
                 }
             }
         }
@@ -182,26 +167,24 @@ struct Moving {
 
 enum State {
     Moving(Moving),
-    GameOver,
+    //GameOver,
 }
 
 struct Game {
     board: Board,
     metrics: Metrics,
-    piece: Vec<Board>,
     state: State,
+    //maze: Maze
 }
 
 impl Game {
     fn new(metrics: Metrics) -> Self {
-        let __ = 0;
-        let xx = 01;
         let piece = vec![Board::player(
-         &[
-                [__, __, __, __],
-                [__, __, __, __],
-                [__, __, xx, __],
-                [__, __, __, __],
+            &[
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 0],
             ],
             Color::Red,
         )]
@@ -212,51 +195,30 @@ impl Game {
         Game {
             board: Board::empty(metrics.board_x, metrics.board_y),
             state: State::Moving(Self::new_move(&piece)),
-            piece,
             metrics,
         }
     }
 
     fn new_move(piece: &Vec<Board>) -> Moving {
-        let idx = 20 % piece.len();
-
         Moving {
             offset: (0, 0),
-            player: piece[idx].clone(),
+            player: piece[0].clone(),
             time_since_move: Instant::now(),
         }
     }
 
     fn move_piece(&mut self, change: (isize, isize)) {
         let opt_new_state = match &mut self.state {
-            State::GameOver => None,
+            //State::GameOver => None,
             State::Moving(moving) => {
                 let new_offset = {
                     let (x, y) = moving.offset;
                     ((x as isize + change.0), (y as isize + change.1))
                 };
-
-                let is_down = change == (0, 1);
-
-                if self.board.as_merged(new_offset, &moving.player).is_none() {
-                    // There were collisions
-                    if is_down {
-                        match self.board.as_merged(moving.offset, &moving.player) {
-                            None => Some(State::GameOver),
-                            Some(merged_board) => {
-                                self.board = merged_board;
-                                *moving = Self::new_move(&self.piece);
-                                None
-                            }
-                        }
-                    } else {
-                        None
-                    }
-                } else {
+                
                     moving.offset = new_offset;
                     moving.time_since_move = Instant::now();
                     None
-                }
             }
         };
 
@@ -271,7 +233,7 @@ impl Game {
         }
 
         let disp = match &mut self.state {
-            State::GameOver => return,
+            //State::GameOver => return,
             State::Moving(moving) => {
                 if moving.time_since_move.elapsed() <= Duration::from_millis(700) {
                     return;
@@ -292,12 +254,10 @@ impl Game {
         gl.draw(args.viewport(), |_, gl| match &self.state {
             State::Moving(moving) => {
                 if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
-                    merged.draw(c, gl, DrawEffect::None, &self.metrics);
+                    merged.draw(c, gl, &self.metrics);
                 }
             }
-            State::GameOver => {
-                self.board.draw(c, gl, DrawEffect::None, &self.metrics);
-            }
+            //State::GameOver
         });
     }
 
