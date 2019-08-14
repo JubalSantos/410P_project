@@ -41,6 +41,14 @@ impl Board {
         let cells: Vec<_> = (0..dim_y).map(|_| line.clone()).collect();
         Board { cells }
     }
+    fn valid(&self, offset: (isize, isize)) -> bool {
+        if offset.0 >= 0  &&  offset.0 < self.dim_x() as isize {
+            if offset.1 >= 0  &&  offset.1 < self.dim_y() as isize {
+                return true;
+            }
+        }
+        return false;
+    }
 
     fn dim_x(&self) -> usize {
         self.cells[0].len()
@@ -70,12 +78,12 @@ impl Board {
                 if cell.is_some() {
                     let x = x as isize + offset.0;
                     let y = y as isize + offset.1;
-                    if self.cells[y as usize][x as usize].is_none() {
-                        copy.cells[y as usize][x as usize] = cell.clone();
-                    } else {
-                        // Collision
+                    if !self.valid((x, y)) {
                         return None;
                     }
+                    else if self.cells[y as usize][x as usize].is_none() {
+                        copy.cells[y as usize][x as usize] = cell.clone();
+                    } 
                 }
             }
         }
