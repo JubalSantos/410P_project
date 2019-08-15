@@ -8,6 +8,9 @@ use crate::maze::Maze;
 use crate::player::Enemie;
 use crate::player::{Direction, Player};
 
+const SIZE_X = 21;
+const SIZE_Y = 21;
+
 pub struct Game {
     pub gl: GlGraphics,
     pub maze: Maze,
@@ -17,7 +20,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(gl: GlGraphics) -> Game {
-        let maze = Maze::gen(21, 21);
+        let maze = Maze::gen(SIZE_X, SIZE_Y);
         Game {
             gl,
             maze,
