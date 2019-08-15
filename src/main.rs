@@ -1,14 +1,19 @@
 extern crate opengl_graphics;
 extern crate piston_window;
 extern crate rand;
+use std::convert::TryInto;
 
 use opengl_graphics::GlGraphics;
 use piston_window::*;
 use std::time::{Duration, Instant};
 
+const SIZE_X: usize = 21;
+const SIZE_Y: usize = 21;
+
 #[derive(Copy, Clone)]
 enum Color {
     Red,
+    Blue,
 }
 
 struct Metrics {
@@ -31,6 +36,7 @@ type Cell = Option<Color>;
 #[derive(Clone)]
 struct Board {
     cells: Vec<Vec<Cell>>,
+    pattern: Vec<Vec<u8>>,
 }
 
 type Player = Board;
@@ -39,7 +45,36 @@ impl Board {
     fn empty(dim_x: usize, dim_y: usize) -> Self {
         let line: Vec<_> = (0..dim_x).map(|_| None).collect();
         let cells: Vec<_> = (0..dim_y).map(|_| line.clone()).collect();
-        Board { cells }
+        
+        //===
+        //let mut rng = rand::thread_rng();
+        //let mut val: u8 = rng.gen();
+        //val = val % 2;
+        //=== 
+        let pattern = vec![
+        vec![0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0], 
+        vec![0,1,0,1,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0],  
+        vec![0,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],  
+        vec![0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],  
+        vec![0,1,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],  
+        vec![0,1,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0], 
+        vec![1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1], 
+        vec![0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0], 
+        vec![0,0,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,2], 
+        vec![0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,1], 
+        vec![0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1], 
+        vec![0,0,0,0,1,0,1,0,0,1,0,0,1,1,0,0,0,1,0,0,0], 
+        vec![0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,1,1,1,0,0,0], 
+        vec![1,1,1,1,1,0,1,0,0,1,0,1,1,1,1,1,1,0,0,0,0], 
+        vec![0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0], 
+        vec![1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0], 
+        vec![1,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0], 
+        vec![1,1,1,0,1,0,1,0,0,0,0,0,0,1,0,1,1,0,1,0,0], 
+        vec![0,0,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0], 
+        vec![0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0], 
+        vec![0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0], 
+                            ];
+        Board { cells , pattern}
     }
 
     fn dim_x(&self) -> usize {
@@ -90,29 +125,87 @@ impl Board {
 
         for x in 0..self.dim_x() {
             for y in 0..self.dim_y() {
-                let block_pixels = metrics.block_pixels as f64;
-                let border_size = block_pixels / 20.0;
-                let outer = [
-                    block_pixels * (x as f64),
-                    block_pixels * (y as f64),
-                    block_pixels,
-                    block_pixels,
-                ];
-                let inner = [
-                    outer[0] + border_size,
-                    outer[1] + border_size,
-                    outer[2] - border_size * 2.0,
-                    outer[3] - border_size * 2.0,
-                ];
+                if self.pattern[y][x] == 0 {
+                    // leave this alone
+                    let block_pixels = metrics.block_pixels as f64;
+                    let border_size = block_pixels / 20.0;
+                    let outer = [
+                        block_pixels * (x as f64),
+                        block_pixels * (y as f64),
+                        block_pixels,
+                        block_pixels,
+                    ];
+                    let inner = [
+                        outer[0] + border_size,
+                        outer[1] + border_size,
+                        outer[2] - border_size * 2.0,
+                        outer[3] - border_size * 2.0,
+                    ];
 
-                draw([0.0, 0.0, 0.0, 1.0], outer);
-                draw([0.1, 0.2, 0.3, 1.0], inner);
+                    draw([0.0, 0.0, 0.0, 1.0], outer);
+                    draw([0.1, 0.2, 0.3, 1.0], inner);
 
-                if let Some(color) = self.cells[y][x] {
-                    let code = match color {
-                        Color::Red => [1.0, 0.0, 0.0, 1.0],
-                    };
-                    draw(code, outer);
+                    if let Some(color) = self.cells[y][x] {
+                        let code = match color {
+                            Color::Red => [1.0, 0.0, 0.0, 1.0],
+                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
+                        };
+                        draw(code, outer);
+                    }
+                }
+                if self.pattern[y][x] == 1 {
+                    let block_pixels = metrics.block_pixels as f64;
+                    let border_size = block_pixels / 20.0;
+                    let outer = [
+                        block_pixels * (x as f64),
+                        block_pixels * (y as f64),
+                        block_pixels,
+                        block_pixels,
+                    ];
+                    let inner = [
+                        outer[0] + border_size,
+                        outer[1] + border_size,
+                        outer[2] - border_size * 2.0,
+                        outer[3] - border_size * 2.0,
+                    ];
+
+                    draw([0.0, 0.0, 0.0, 0.0], outer);
+                    draw([0.1, 0.0, 1.0, 1.0], inner);
+
+                    if let Some(color) = self.cells[y][x] {
+                        let code = match color {
+                            Color::Red => [1.0, 0.0, 0.0, 1.0],
+                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
+                        };
+                        draw(code, outer);
+                    }
+                }
+                if self.pattern[y][x] == 2 {
+                    let block_pixels = metrics.block_pixels as f64;
+                    let border_size = block_pixels / 20.0;
+                    let outer = [
+                        block_pixels * (x as f64),
+                        block_pixels * (y as f64),
+                        block_pixels,
+                        block_pixels,
+                    ];
+                    let inner = [
+                        outer[0] + border_size,
+                        outer[1] + border_size,
+                        outer[2] - border_size * 2.0,
+                        outer[3] - border_size * 2.0,
+                    ];
+
+                    draw([0.0, 0.0, 0.0, 0.0], outer);
+                    draw([0.5, 0.5, 0.5, 0.5], inner);
+
+                    if let Some(color) = self.cells[y][x] {
+                        let code = match color {
+                            Color::Red => [1.0, 0.0, 0.0, 1.0],
+                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
+                        };
+                        draw(code, outer);
+                    }
                 }
             }
         }
@@ -203,12 +296,53 @@ impl Game {
         let opt_new_state = match &mut self.state {
             //State::GameOver => None,
             State::Moving(moving) => {
-                let new_offset = {
+                let mut new_offset = {
                     let (x, y) = moving.offset;
                     ((x as isize + change.0), (y as isize + change.1))
                 };
 
-                moving.offset = new_offset;
+                if new_offset.0 < 1 {
+                    new_offset.0 = 0;
+                }
+                if new_offset.0 > (SIZE_X-1).try_into().unwrap() {
+                    new_offset.0 = (SIZE_X-1).try_into().unwrap();
+                }
+                if new_offset.1 < 1 {
+                    new_offset.1 = 0;
+                }
+                if new_offset.1 > (SIZE_Y-1).try_into().unwrap() {
+                    new_offset.1 = (SIZE_Y-1).try_into().unwrap();
+                }
+
+                let x: usize = (new_offset.0).try_into().unwrap();
+                let y: usize = (new_offset.1).try_into().unwrap();
+
+                if self.board.pattern[y][x] == 0 {
+                    moving.offset = new_offset;
+                    //println!("\nValid move!");
+                }
+                else if self.board.pattern[y][x] == 1 {
+                    //println!("\nInvalid move!");
+                }
+                else if self.board.pattern[y][x] == 2 {
+                    println!("YOU WIN!!!");
+                    std::process::exit(1);
+                }
+                //======
+                // check for out of bounds move
+                if moving.offset.0 < 1 {
+                    moving.offset.0 = 0;
+                }
+                if moving.offset.0 > (SIZE_X-1).try_into().unwrap() {
+                    moving.offset.0 = (SIZE_X-1).try_into().unwrap();
+                }
+                if moving.offset.1 < 1 {
+                    moving.offset.1 = 0;
+                }
+                if moving.offset.1 > (SIZE_Y-1).try_into().unwrap() {
+                    moving.offset.1 = (SIZE_Y-1).try_into().unwrap();
+                }
+                //======
                 moving.time_since_move = Instant::now();
                 None
             }
@@ -277,8 +411,8 @@ impl Game {
 fn main() {
     let metrics = Metrics {
         block_pixels: 30,
-        board_x: 21,
-        board_y: 21,
+        board_x: SIZE_X,
+        board_y: SIZE_Y,
     };
 
     let mut window: PistonWindow = WindowSettings::new("Mazemania", metrics.resolution())
