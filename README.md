@@ -19,7 +19,7 @@ when the program is up and running you can use the following keys to move the pl
 * `WASD or arrow keys`
 
 
-
+![alt text](screenshots/filename.png "a picture of the game when running")
 Here is a rough prototype for a maze:
 ```
 | ----------------------------- |
