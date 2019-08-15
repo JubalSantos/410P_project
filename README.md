@@ -10,10 +10,13 @@ Our project is a simple graphical game where the player navigates some type of m
 # How to Play!
 Simply clone this repository to your local machine.
 to build and run the program you can use the two commands below
-'cargo build'
-'cargo run' 
+
+*'cargo build'
+*'cargo run' 
+
 when the program is up and running you can use the following keys to move the player in the game to win.
-'WASD or arrow keys'
+
+*'WASD or arrow keys'
 
 
 
