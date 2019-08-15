@@ -45,45 +45,87 @@ impl Board {
     fn empty(dim_x: usize, dim_y: usize) -> Self {
         let line: Vec<_> = (0..dim_x).map(|_| None).collect();
         let cells: Vec<_> = (0..dim_y).map(|_| line.clone()).collect();
-        
+
         //===
         //let mut rng = rand::thread_rng();
         //let mut val: u8 = rng.gen();
         //val = val % 2;
-        //=== 
+        //===
         let pattern = vec![
-        vec![0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0], 
-        vec![0,1,0,1,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0],  
-        vec![0,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],  
-        vec![0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],  
-        vec![0,1,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],  
-        vec![0,1,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0], 
-        vec![1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1], 
-        vec![0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0], 
-        vec![0,0,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,2], 
-        vec![0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,1], 
-        vec![0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1], 
-        vec![0,0,0,0,1,0,1,0,0,1,0,0,1,1,0,0,0,1,0,0,0], 
-        vec![0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,1,1,1,0,0,0], 
-        vec![1,1,1,1,1,0,1,0,0,1,0,1,1,1,1,1,1,0,0,0,0], 
-        vec![0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0], 
-        vec![1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0], 
-        vec![1,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0], 
-        vec![1,1,1,0,1,0,1,0,0,0,0,0,0,1,0,1,1,0,1,0,0], 
-        vec![0,0,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0], 
-        vec![0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0], 
-        vec![0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0], 
-                            ];
-        Board { cells , pattern}
+            vec![
+                0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+            ],
+            vec![
+                0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 2,
+            ],
+            vec![
+                0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1,
+            ],
+            vec![
+                0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+            ],
+            vec![
+                0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0,
+            ],
+            vec![
+                0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
+            ],
+            vec![
+                1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+            ],
+            vec![
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            ],
+            vec![
+                1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+            ],
+            vec![
+                1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0,
+            ],
+            vec![
+                0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+            ],
+            vec![
+                0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+            ],
+            vec![
+                0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+            ],
+        ];
+        Board { cells, pattern }
     }
-    
+
     fn valid(&self, offset: (isize, isize)) -> bool {
-        if offset.0 >= 0  &&  offset.0 < self.dim_x() as isize {
-            if offset.1 >= 0  &&  offset.1 < self.dim_y() as isize {
+        if offset.0 >= 0 && offset.0 < self.dim_x() as isize {
+            if offset.1 >= 0 && offset.1 < self.dim_y() as isize {
                 return true;
             }
         }
-        return false;
+       return false;
     }
 
     fn dim_x(&self) -> usize {
@@ -92,8 +134,7 @@ impl Board {
     fn dim_y(&self) -> usize {
         self.cells.len()
     }
-
-    fn player(spec: &[[u8; 1]; 1], color: Color) -> Self {
+    fn player(spec: [[u8; 1]; 1], color: Color) -> Self {
         let mut board = Board::empty(spec[0].len(), spec.len());
 
         for x in 0..spec[0].len() {
@@ -116,8 +157,7 @@ impl Board {
                     let y = y as isize + offset.1;
                     if !self.valid((x, y)) {
                         return None;
-                    }
-                    else if self.cells[y as usize][x as usize].is_none() {
+                    } else if self.cells[y as usize][x as usize].is_none() {
                         copy.cells[y as usize][x as usize] = cell.clone();
                     }
                 }
@@ -262,7 +302,7 @@ struct Game {
 
 impl Game {
     fn new(metrics: Metrics) -> Self {
-        let piece = vec![Board::player(&[[1]], Color::Red)]
+        let piece = vec![Board::player([[1]], Color::Red)]
             .into_iter()
             .map(|x| x.with_trim_sides())
             .collect();
@@ -293,14 +333,14 @@ impl Game {
                 if new_offset.0 < 1 {
                     new_offset.0 = 0;
                 }
-                if new_offset.0 > (SIZE_X-1).try_into().unwrap() {
-                    new_offset.0 = (SIZE_X-1).try_into().unwrap();
+                if new_offset.0 > (SIZE_X - 1).try_into().unwrap() {
+                    new_offset.0 = (SIZE_X - 1).try_into().unwrap();
                 }
                 if new_offset.1 < 1 {
                     new_offset.1 = 0;
                 }
-                if new_offset.1 > (SIZE_Y-1).try_into().unwrap() {
-                    new_offset.1 = (SIZE_Y-1).try_into().unwrap();
+                if new_offset.1 > (SIZE_Y - 1).try_into().unwrap() {
+                    new_offset.1 = (SIZE_Y - 1).try_into().unwrap();
                 }
 
                 let x: usize = (new_offset.0).try_into().unwrap();
@@ -308,12 +348,10 @@ impl Game {
 
                 if self.board.pattern[y][x] == 0 {
                     moving.offset = new_offset;
-                    //println!("\nValid move!");
-                }
-                else if self.board.pattern[y][x] == 1 {
+                //println!("\nValid move!");
+                } else if self.board.pattern[y][x] == 1 {
                     //println!("\nInvalid move!");
-                }
-                else if self.board.pattern[y][x] == 2 {
+                } else if self.board.pattern[y][x] == 2 {
                     println!("YOU WIN!!!");
                     std::process::exit(1);
                 }
@@ -322,14 +360,14 @@ impl Game {
                 if moving.offset.0 < 1 {
                     moving.offset.0 = 0;
                 }
-                if moving.offset.0 > (SIZE_X-1).try_into().unwrap() {
-                    moving.offset.0 = (SIZE_X-1).try_into().unwrap();
+                if moving.offset.0 > (SIZE_X - 1).try_into().unwrap() {
+                    moving.offset.0 = (SIZE_X - 1).try_into().unwrap();
                 }
                 if moving.offset.1 < 1 {
                     moving.offset.1 = 0;
                 }
-                if moving.offset.1 > (SIZE_Y-1).try_into().unwrap() {
-                    moving.offset.1 = (SIZE_Y-1).try_into().unwrap();
+                if moving.offset.1 > (SIZE_Y - 1).try_into().unwrap() {
+                    moving.offset.1 = (SIZE_Y - 1).try_into().unwrap();
                 }
                 //======
                 moving.time_since_move = Instant::now();
@@ -341,7 +379,7 @@ impl Game {
             self.state = new_state;
         }
     }
-
+    //updates the movement of the player
     fn progress(&mut self) {
         enum Disposition {
             Mm,

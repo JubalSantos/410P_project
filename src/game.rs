@@ -25,27 +25,22 @@ impl Game {
             gl,
             maze,
             player: Player {
-                //starting position of snake
                 x: 0,
                 y: 0,
-                //the direction that it starts moving
                 dir: Direction::RIGHT,
             },
             enemie: Enemie {
-                //starting postion of the enemie
                 x: 10,
                 y: 10,
             },
         }
     }
-    //generates a white gameboard
     pub fn render(&mut self, arg: &RenderArgs) {
         use graphics::*;
 
         const BLUE: [f32; 4] = [0.1, 0.2, 0.3, 1.0];
         self.gl.draw(arg.viewport(), |mut c, gll| {
             clear(BLUE, gll);
-            //c.transform = c.transform.trans(cx, cy);
         });
         self.player.render(&mut self.gl, arg);
         self.enemie.render(&mut self.gl, arg);
