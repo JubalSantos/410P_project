@@ -7,13 +7,13 @@ use opengl_graphics::GlGraphics;
 use piston_window::*;
 use std::time::{Duration, Instant};
 
+//the size of the board/screen
 const SIZE_X: usize = 21;
 const SIZE_Y: usize = 21;
 
 #[derive(Copy, Clone)]
 enum Color {
     Red,
-    Blue,
 }
 
 struct Metrics {
@@ -76,6 +76,7 @@ impl Board {
                             ];
         Board { cells , pattern}
     }
+    
     fn valid(&self, offset: (isize, isize)) -> bool {
         if offset.0 >= 0  &&  offset.0 < self.dim_x() as isize {
             if offset.1 >= 0  &&  offset.1 < self.dim_y() as isize {
@@ -118,7 +119,7 @@ impl Board {
                     }
                     else if self.cells[y as usize][x as usize].is_none() {
                         copy.cells[y as usize][x as usize] = cell.clone();
-                    } 
+                    }
                 }
             }
         }
@@ -156,7 +157,6 @@ impl Board {
                     if let Some(color) = self.cells[y][x] {
                         let code = match color {
                             Color::Red => [1.0, 0.0, 0.0, 1.0],
-                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
                         };
                         draw(code, outer);
                     }
@@ -179,14 +179,6 @@ impl Board {
 
                     draw([0.0, 0.0, 0.0, 0.0], outer);
                     draw([0.1, 0.0, 1.0, 1.0], inner);
-
-                    if let Some(color) = self.cells[y][x] {
-                        let code = match color {
-                            Color::Red => [1.0, 0.0, 0.0, 1.0],
-                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
-                        };
-                        draw(code, outer);
-                    }
                 }
                 if self.pattern[y][x] == 2 {
                     let block_pixels = metrics.block_pixels as f64;
@@ -205,15 +197,7 @@ impl Board {
                     ];
 
                     draw([0.0, 0.0, 0.0, 0.0], outer);
-                    draw([0.5, 0.5, 0.5, 0.5], inner);
-
-                    if let Some(color) = self.cells[y][x] {
-                        let code = match color {
-                            Color::Red => [1.0, 0.0, 0.0, 1.0],
-                            Color::Blue => [0.0, 0.0, 0.0, 0.0],
-                        };
-                        draw(code, outer);
-                    }
+                    draw([1.0, 1.0, 1.0, 1.0], inner);
                 }
             }
         }
@@ -268,14 +252,12 @@ struct Moving {
 
 enum State {
     Moving(Moving),
-    //GameOver,
 }
 
 struct Game {
     board: Board,
     metrics: Metrics,
     state: State,
-    //maze: Maze
 }
 
 impl Game {
@@ -302,7 +284,6 @@ impl Game {
 
     fn move_piece(&mut self, change: (isize, isize)) {
         let opt_new_state = match &mut self.state {
-            //State::GameOver => None,
             State::Moving(moving) => {
                 let mut new_offset = {
                     let (x, y) = moving.offset;
@@ -367,7 +348,6 @@ impl Game {
         }
 
         let disp = match &mut self.state {
-            //State::GameOver => return,
             State::Moving(moving) => {
                 if moving.time_since_move.elapsed() <= Duration::from_millis(700) {
                     return;
@@ -390,7 +370,7 @@ impl Game {
                 if let Some(merged) = self.board.as_merged(moving.offset, &moving.player) {
                     merged.draw(c, gl, &self.metrics);
                 }
-            } //State::GameOver
+            }
         });
     }
 
@@ -406,6 +386,10 @@ impl Game {
             Key::Left => Some((-1, 0)),
             Key::Down => Some((0, 1)),
             Key::Up => Some((0, -1)),
+            Key::D => Some((1, 0)),
+            Key::A => Some((-1, 0)),
+            Key::S => Some((0, 1)),
+            Key::W => Some((0, -1)),
             _ => None,
         };
 
