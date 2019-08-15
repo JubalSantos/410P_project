@@ -18,8 +18,6 @@ when the program is up and running you can use the following keys to move the pl
 
 * `WASD or arrow keys`
 
-
-![alt text](https://github.com/JubalSantos/mazemania/blob/master/src/Screen%20Shot%202019-08-15%20at%2012.40.32%20PM.png "a picture of the game when running")
 Here is a rough prototype for a maze:
 ```
 | ----------------------------- |
@@ -33,6 +31,10 @@ Here is a rough prototype for a maze:
 |     |---------   |       |    |
 | ----------------------------- |
 ```
+and here is the final result
+
+![alt text](https://github.com/JubalSantos/mazemania/blob/master/src/Screen%20Shot%202019-08-15%20at%2012.40.32%20PM.png "a picture of the game when running")
+
 
 ## License 
 This program is licensed under the "MIT License". Please see the file LICENSE in the source distribution of this software for license terms.
