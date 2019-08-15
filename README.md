@@ -2,24 +2,26 @@
 
 Copyright (c) Jubal Gonzalez-Santos, Ryan Sanford
 
-The name of our project is mazemania
+Welcome to Mazemania!
 
-Our project is going to be a game and tha name of the project is mazemania. The game will be in ascii art but hopefully towards its completion we will have better graphics. Its going to be a maze type game that is going to have different types of level that the player/user can play. When playing the player/user will have to go through a maze while also trying to 
-stay alive since there will be enemies around that is going to try and kill the player.
+# Description
+Our project is a simple graphical game where the player navigates some type of maze to the finish line! The game will use graphical output to display the data on screen in a (hopefully) colorful and fun way! The game features four different mazes which will be randomly selected for the user at runtime. Navigate to the exit using either the arrow keys or WASD. if you reach the goal, you win!
+
+# How to Play!
+Simply clone this repository to your local machine, and use cargo to build and run the program. Then, use the WASD or arrow keys to move around the screen and move towards the goal!
 
 
-
-The game would look somewhat like this
+Here is a rough prototype for a maze:
 ```
 | ----------------------------- |
 |  start  |                     |
 |   |     |    -----------|     |
 |   |        |    |             |
 |   ----------    |    |------- |   
-|         | enemy |        |end |
+|         |            |    end |
 | ----|  |------------|    |    |
 |                     |    -    |
-| enemy  |---------   |         |
+|     |---------   |       |    |
 | ----------------------------- |
 ```
 
